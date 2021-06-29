@@ -1,2 +1,2 @@
 # compose-bitcoin-tor-lnd-thub
-A docker compose for painless full node bootstrap
+A docker compose to painlessly bootstrap a mainnet lightning full node 
