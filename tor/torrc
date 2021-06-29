@@ -1,0 +1,19 @@
+ControlPort 0.0.0.0:9051
+SOCKSPort 0.0.0.0:9050
+CookieAuthentication 1
+
+HashedControlPassword 16:868B240106079CF5608B39DAA38B4A68CD8116CF77368DCCC212B0BB89
+
+# For the hidden service BTC-P2P
+HiddenServiceDir /var/lib/tor/hidden_services/BTC-P2P
+# Redirecting to btcpayserver_bitcoind
+HiddenServicePort 8333 172.20.0.4:8333
+# For the hidden service BTC-RPC
+HiddenServiceDir /var/lib/tor/hidden_services/BTC-RPC
+# Redirecting to btcpayserver_bitcoind
+HiddenServicePort 8332 172.20.0.4:8332
+# For the hidden service lnd
+HiddenServiceDir /var/lib/tor/hidden_services/lnd
+# Redirecting to btcpayserver_lnd_bitcoin
+HiddenServicePort 9735 172.20.0.5:9735
+
