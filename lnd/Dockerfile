@@ -20,7 +20,7 @@ RUN set -e \
 	&& SIGNERS=( "roasbeef" "carlakirkcohen" "guggero" "eugene_" "halseth" ) \
         && wget -q "$LND_URL" \
         && wget -qO lnd-manifest.txt "$LND_MANIFEST_URL" \
-        && found=''; \
+        && verified=''; \
 		for pgp_key in "${SIGNERS[@]}" \
 		; do \
                         echo "Verifying manifest signature against $pgp_key's key" \  
@@ -29,11 +29,11 @@ RUN set -e \
                         && wget -qO $pgp_key.pub.asc https://keybase.io/$pgp_key/pgp_keys.asc \
                         && gpg --import $pgp_key.pub.asc 2> /dev/null \
                         && gpg --verify lnd-manifest.txt.sig 2> /dev/null \
-                        && found=yes \
+                        && verified=yes \
                         && break; \
                 done; \
                 rm lnd-manifest.txt.sig && rm *.pub.asc \
-		&& test -z "$found" && echo exit 1; \
+		&& test -z "$verified" && echo exit 1; \
 
 	echo "Successfully completed validation of signatures" \
         && grep lnd-$LND_PLATFORM-$LND_VERSION.tar.gz lnd-manifest.txt | sha256sum -c - \
