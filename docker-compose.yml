@@ -21,68 +21,35 @@ services:
     - "28333"
     - "28334"
     volumes:
-    - "/media/rich/experiments1/bitcoin:/data"
-    - "bitcoin_wallet_datadir:/walletdata"
+    - "/media/rich/experiments/bitcoin:/data"
+#    - "bitcoin_wallet_datadir:/walletdata"
     - "tor_datadir:/home/tor/.tor"
     links:
     - tor
-#   lnd_bitcoin:
-#     image: btcpayserver/lnd:v0.12.1-beta-withloop
-#     container_name: lnd
-#     restart: unless-stopped
-#     networks: 
-#       bitcoin_net:
-#         ipv4_address: 172.20.0.5
-#     environment:
-#       LND_CHAIN: "btc"
-#       LND_EXTERNALIP: ${BTCPAY_ANNOUNCEABLE_HOST}
-#       LND_PORT: 9735
-#       LND_ALIAS: "blatnode"
-#       LND_ENVIRONMENT: "mainnet"
-#       # LND_READY_FILE: /root/.nbxplorer/btc_fully_synched
-#       LND_READY_FILE: /deps/.bitcoin/bitcoin.conf
-#       LND_REST_LISTEN_HOST: http://lnd_bitcoin:8080
-#       LND_HOST_FOR_LOOP: 127.0.0.1:10009
-#       LND_EXTRA_ARGS: |
-#         restlisten=lnd_bitcoin:8080
-#         rpclisten=127.0.0.1:10008
-#         rpclisten=lnd_bitcoin:10009
-#         rpclisten=127.0.0.1:10009
-#         bitcoin.node=bitcoind
-#         bitcoind.rpchost=bitcoind:8332
-#         bitcoind.rpcuser=lnd
-#         bitcoind.rpcpass=afixedpasswordbecauselndsuckswithcookiefile
-#         bitcoind.zmqpubrawblock=tcp://bitcoind:28332
-#         bitcoind.zmqpubrawtx=tcp://bitcoind:28333
-#         adminmacaroonpath=/data/admin.macaroon
-#         invoicemacaroonpath=/data/invoice.macaroon
-#         readonlymacaroonpath=/data/readonly.macaroon
-#         tlsextradomain=lnd_bitcoin
-#         no-rest-tls=1
-#         protocol.wumbo-channels=1
-# 
-#         tor.active=1
-#         tor.socks=tor:9050
-# 
-#         accept-keysend=1
-#       HIDDENSERVICE_NAME: lnd
-#       HIDDENSERVICE_PORT: 9735
-#       LND_HIDDENSERVICE_HOSTNAME_FILE: /var/lib/tor/hidden_services/lnd/hostname
-#     ports:
-#     - "9735:9735"
-#     expose:
-#     - "8080"
-#     - "8081"
-#     - "9735"
-#     volumes:
-#     - "lnd_bitcoin_datadir:/data"
-#     - "lndloop_bitcoin_datadir:/root/.loop/${NBITCOIN_NETWORK:-regtest}"
-#     - "/media/rich/experiments1/bitcoin:/deps/.bitcoin"
-#     - "tor_datadir:/home/tor/.tor"
-#     - "tor_servicesdir:/var/lib/tor/hidden_services"
-#     links:
-#     - bitcoind
-#     - tor
+  lnd_bitcoin:
+    container_name: lnd
+    build:
+      context: "./lnd"
+      dockerfile: "Dockerfile"
+    restart: unless-stopped
+    networks: 
+      bitcoin_net:
+        ipv4_address: 172.20.0.5
+    ports:
+    - "9735:9735"
+    expose:
+    - "8080"
+    - "8081"
+    - "9735"
+    volumes:
+    - "lnd_bitcoin_datadir:/data"
+    - "lndloop_bitcoin_datadir:/root/.loop/${NBITCOIN_NETWORK:-regtest}"
+    - "/media/rich/experiments/bitcoin:/deps/.bitcoin"
+    - "tor_datadir:/home/tor/.tor"
+    - "tor_servicesdir:/var/lib/tor/hidden_services"
+    links:
+    - bitcoind
+    - tor
 #   bitcoin_thub:
 #     image: apotdevin/thunderhub:base-v0.12.17@sha256:a5f85ee15c5d8f31630c28c702a035b2b2a50b5ac2145eb1f6ce0e4c1c69bdc9
 #     restart: unless-stopped
@@ -128,8 +95,8 @@ services:
     - "tor_servicesdir:/var/lib/tor/hidden_services"
  
 volumes:
-  #"/media/rich/experiments1/bitcoin:bitcoin_datadir"
-  bitcoin_wallet_datadir: 
+  #"/media/rich/experiments/bitcoin:bitcoin_datadir"
+  #bitcoin_wallet_datadir: 
   lnd_bitcoin_datadir: 
   lndloop_bitcoin_datadir: 
   lnd_bitcoin_rtl_datadir: 

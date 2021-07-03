@@ -1,4 +1,4 @@
-FROM debian:buster-slim as builder
+FROM debian:buster-slim as verifier
 
 RUN set -e \
 	&& apt-get update \
@@ -16,6 +16,7 @@ ENV LND_MANIFEST_URL=$LND_DOWNLOAD_PREFIX_URL/manifest-$LND_VERSION.txt
 ENV LND_MANIFEST_SIG_URL=$LND_DOWNLOAD_PREFIX_URL/manifest-\$pgp_key-$LND_VERSION.sig
 
 RUN set -e \
+	&& echo $PWD \
 	&& declare -a SIGNERS \
 	&& SIGNERS=( "roasbeef" "carlakirkcohen" "guggero" "eugene_" "halseth" ) \
         && wget -q "$LND_URL" \
@@ -39,6 +40,24 @@ RUN set -e \
         && grep lnd-$LND_PLATFORM-$LND_VERSION.tar.gz lnd-manifest.txt | sha256sum -c - \
         && tar -xvzf $LND_TARBALL_PREFIX.tar.gz \
         && grep "$LND_TARBALL_PREFIX/lncli" lnd-manifest.txt | sha256sum -c - \
-        && grep "$LND_TARBALL_PREFIX/lnd" lnd-manifest.txt | sha256sum -c - 
+        && grep "$LND_TARBALL_PREFIX/lnd" lnd-manifest.txt | sha256sum -c - \
+	&& cp ./$LND_TARBALL_PREFIX/* /bin
 
-# ENTRYPOINT ["bash"]
+FROM debian:buster-slim
+COPY --from=verifier "/bin/lnd" /bin/lnd
+COPY --from=verifier "/bin/lncli" /bin/lncli
+
+ENV LND_DATA /data
+ENV LND_BITCOIND /deps/.bitcoin
+ENV LND_PORT 9735
+
+RUN mkdir -p "$LND_DATA" && \
+    mkdir -p "$LND_BITCOIND" && \
+    ln -sfn "$LND_DATA" /root/.lnd && \
+    ln -sfn "$LND_BITCOIND" /root/.bitcoin 
+
+COPY docker-entrypoint.sh /entrypoint.sh
+COPY lnd.conf $LND_DATA/lnd.conf
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["lnd"]
