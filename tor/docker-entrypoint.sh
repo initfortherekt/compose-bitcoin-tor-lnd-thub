@@ -11,18 +11,6 @@ mkdir -p "/var/lib/tor/hidden_services"
 chown -R tor /var/lib/tor/hidden_services
 chmod 700 /var/lib/tor/hidden_services
 
-# cat <<-EOF > "$TOR_CONFIG"
-# ControlPort 0.0.0.0:9051
-# SOCKSPort 0.0.0.0:9050
-# ${TOR_EXTRA_ARGS}
-# EOF
-
-# if ! [ -z "${TOR_ADDITIONAL_CONFIG}" ]; then
-#     echo "%include $TOR_ADDITIONAL_CONFIG" >> "$TOR_CONFIG"
-#     echo "" >> "$TOR_ADDITIONAL_CONFIG"
-#     echo "Added '%include $TOR_ADDITIONAL_CONFIG' to tor config"
-# fi
-
 chown -R tor "$(dirname $TOR_CONFIG)"
 
 if ! [ -z "${TOR_PASSWORD}" ]; then
